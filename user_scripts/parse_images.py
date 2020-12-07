@@ -197,10 +197,10 @@ def main():
 
             images_to_process = [image for id, image in zip(ids_to_process, images_to_process) if id not in already_processed_files]
             ids_to_process = [id for id in ids_to_process if id not in already_processed_files]
-    print(ids_to_process)
-    print('-----')
-    print(images_to_process)
-    exit()
+    # print(ids_to_process)
+    # print('-----')
+    # print(images_to_process)
+    # exit()
     for index, (file_id, image_file_name) in enumerate(zip(ids_to_process, images_to_process)):
         print("Processing {file_id}".format(file_id=file_id))
         t1 = time.time()
@@ -212,15 +212,17 @@ def main():
             else:
                 image = None
 
-            if input_xml_path:
-                page_layout = PageLayout(file=os.path.join(input_xml_path, file_id + '.xml'))
-            else:
-                page_layout = PageLayout(id=file_id, page_size=(image.shape[0], image.shape[1]))
+            # if input_xml_path:
+            #     page_layout = PageLayout(file=os.path.join(input_xml_path, file_id + '.xml'))
+            # else:
+            page_layout = PageLayout(id=file_id, page_size=(image.shape[0], image.shape[1]))
 
-            if input_logit_path is not None:
-                page_layout.load_logits(os.path.join(input_logit_path, file_id + '.logits'))
+            # if input_logit_path is not None:
+            #     page_layout.load_logits(os.path.join(input_logit_path, file_id + '.logits'))
 
             page_layout = page_parser.process_page(image, page_layout)
+            print(page_layout)
+            exit()
 
             if output_xml_path is not None:
                 page_layout.to_pagexml(os.path.join(output_xml_path, file_id + '.xml'))
@@ -229,22 +231,22 @@ def main():
                 page_layout.render_to_image(image)
                 cv2.imwrite(os.path.join(output_render_path, file_id + '.jpg'), image, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
 
-            if output_logit_path is not None:
-                page_layout.save_logits(os.path.join(output_logit_path, file_id + '.logits'))
+            # if output_logit_path is not None:
+            #     page_layout.save_logits(os.path.join(output_logit_path, file_id + '.logits'))
 
-            if output_alto_path is not None:
-                page_layout.to_altoxml(os.path.join(output_alto_path, file_id + '.xml'))
+            # if output_alto_path is not None:
+            #     page_layout.to_altoxml(os.path.join(output_alto_path, file_id + '.xml'))
 
-            if output_line_path is not None:
-                if lmdb_writer:
-                    lmdb_writer(page_layout, file_id)
-                else:
-                    for region in page_layout.regions:
-                        for line in region.lines:
-                            cv2.imwrite(
-                                os.path.join(output_line_path, f'{file_id}-{line.id}.jpg'),
-                                line.crop.astype(np.uint8),
-                                [int(cv2.IMWRITE_JPEG_QUALITY), 98])
+            # if output_line_path is not None:
+            #     if lmdb_writer:
+            #         lmdb_writer(page_layout, file_id)
+            #     else:
+            #         for region in page_layout.regions:
+            #             for line in region.lines:
+            #                 cv2.imwrite(
+            #                     os.path.join(output_line_path, f'{file_id}-{line.id}.jpg'),
+            #                     line.crop.astype(np.uint8),
+            #                     [int(cv2.IMWRITE_JPEG_QUALITY), 98])
 
         except KeyboardInterrupt:
             traceback.print_exc()
