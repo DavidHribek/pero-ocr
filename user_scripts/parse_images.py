@@ -197,7 +197,9 @@ def main():
 
             images_to_process = [image for id, image in zip(ids_to_process, images_to_process) if id not in already_processed_files]
             ids_to_process = [id for id in ids_to_process if id not in already_processed_files]
-    print(ids_to_process, images_to_process)
+    print(ids_to_process)
+    print('-----')
+    print(images_to_process)
     exit()
     for index, (file_id, image_file_name) in enumerate(zip(ids_to_process, images_to_process)):
         print("Processing {file_id}".format(file_id=file_id))
