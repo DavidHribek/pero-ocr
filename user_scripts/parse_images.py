@@ -205,6 +205,7 @@ def main():
         print("Processing {file_id}".format(file_id=file_id))
         t1 = time.time()
         try:
+            # Load img
             if input_image_path is not None:
                 image = cv2.imread(os.path.join(input_image_path, image_file_name), 1)
                 if image is None:
@@ -221,15 +222,15 @@ def main():
             #     page_layout.load_logits(os.path.join(input_logit_path, file_id + '.logits'))
 
             page_layout = page_parser.process_page(image, page_layout)
-            print(page_layout)
+            print(page_layout.to_pagexml_string())
             exit()
 
             if output_xml_path is not None:
                 page_layout.to_pagexml(os.path.join(output_xml_path, file_id + '.xml'))
 
-            if output_render_path is not None:
-                page_layout.render_to_image(image)
-                cv2.imwrite(os.path.join(output_render_path, file_id + '.jpg'), image, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+            # if output_render_path is not None:
+            #     page_layout.render_to_image(image)
+            #     cv2.imwrite(os.path.join(output_render_path, file_id + '.jpg'), image, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
 
             # if output_logit_path is not None:
             #     page_layout.save_logits(os.path.join(output_logit_path, file_id + '.logits'))
