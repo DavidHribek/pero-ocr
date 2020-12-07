@@ -125,78 +125,78 @@ def main():
 
     if args.input_image_path is not None:
         config['PARSE_FOLDER']['INPUT_IMAGE_PATH'] = args.input_image_path
-    if args.input_xml_path is not None:
-        config['PARSE_FOLDER']['INPUT_XML_PATH'] = args.input_xml_path
+    # if args.input_xml_path is not None:
+    #     config['PARSE_FOLDER']['INPUT_XML_PATH'] = args.input_xml_path
     if args.output_xml_path is not None:
         config['PARSE_FOLDER']['OUTPUT_XML_PATH'] = args.output_xml_path
     if args.output_render_path is not None:
         config['PARSE_FOLDER']['OUTPUT_RENDER_PATH'] = args.output_render_path
-    if args.output_line_path is not None:
-        config['PARSE_FOLDER']['OUTPUT_LINE_PATH'] = args.output_line_path
-    if args.output_logit_path is not None:
-        config['PARSE_FOLDER']['OUTPUT_LOGIT_PATH'] = args.output_logit_path
-    if args.output_alto_path is not None:
-        config['PARSE_FOLDER']['OUTPUT_ALTO_PATH'] = args.output_alto_path
+    # if args.output_line_path is not None:
+    #     config['PARSE_FOLDER']['OUTPUT_LINE_PATH'] = args.output_line_path
+    # if args.output_logit_path is not None:
+    #     config['PARSE_FOLDER']['OUTPUT_LOGIT_PATH'] = args.output_logit_path
+    # if args.output_alto_path is not None:
+    #     config['PARSE_FOLDER']['OUTPUT_ALTO_PATH'] = args.output_alto_path
 
     page_parser = PageParser(config, config_path=os.path.dirname(config_path))
 
     input_image_path = get_value_or_none(config, 'PARSE_FOLDER', 'INPUT_IMAGE_PATH')
-    input_xml_path = get_value_or_none(config, 'PARSE_FOLDER', 'INPUT_XML_PATH')
-    input_logit_path = get_value_or_none(config, 'PARSE_FOLDER', 'INPUT_LOGIT_PATH')
+    # input_xml_path = get_value_or_none(config, 'PARSE_FOLDER', 'INPUT_XML_PATH')
+    # input_logit_path = get_value_or_none(config, 'PARSE_FOLDER', 'INPUT_LOGIT_PATH')
 
     output_render_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_RENDER_PATH')
-    output_line_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_LINE_PATH')
+    # output_line_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_LINE_PATH')
     output_xml_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_XML_PATH')
-    output_logit_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_LOGIT_PATH')
-    output_alto_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_ALTO_PATH')
+    # output_logit_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_LOGIT_PATH')
+    # output_alto_path = get_value_or_none(config, 'PARSE_FOLDER', 'OUTPUT_ALTO_PATH')
 
-    if output_line_path is not None and 'lmdb' in output_line_path:
-        lmdb_writer = LMDB_writer(output_line_path)
-    else:
-        lmdb_writer = None
+    # if output_line_path is not None and 'lmdb' in output_line_path:
+    #     lmdb_writer = LMDB_writer(output_line_path)
+    # else:
+    lmdb_writer = None
 
     if output_render_path is not None:
         create_dir_if_not_exists(output_render_path)
-    if output_line_path is not None:
-        create_dir_if_not_exists(output_line_path)
+    # if output_line_path is not None:
+    #     create_dir_if_not_exists(output_line_path)
     if output_xml_path is not None:
         create_dir_if_not_exists(output_xml_path)
-    if output_logit_path is not None:
-        create_dir_if_not_exists(output_logit_path)
-    if output_alto_path is not None:
-        create_dir_if_not_exists(output_alto_path)
+    # if output_logit_path is not None:
+    #     create_dir_if_not_exists(output_logit_path)
+    # if output_alto_path is not None:
+    #     create_dir_if_not_exists(output_alto_path)
 
-    if input_logit_path is not None and input_xml_path is None:
-        input_logit_path = None
-        print('Warning: Logit path specified and Page XML path not specified. Logits will be ignored.')
+    # if input_logit_path is not None and input_xml_path is None:
+    #     input_logit_path = None
+    #     print('Warning: Logit path specified and Page XML path not specified. Logits will be ignored.')
 
     if input_image_path is not None:
         print(f'Reading images from {input_image_path}.')
         images_to_process = [f for f in os.listdir(input_image_path) if
                              os.path.splitext(f)[1].lower() in ['.jpg', '.jpeg', '.png', '.tif']]
         ids_to_process = [os.path.splitext(os.path.basename(file))[0] for file in images_to_process]
-    elif input_xml_path is not None:
-        print(f'Reading page xml from {input_xml_path}')
-        xml_to_process = [f for f in os.listdir(input_xml_path) if
-                          os.path.splitext(f)[1] == '.xml']
-        images_to_process = [None] * len(xml_to_process)
-        ids_to_process = [os.path.splitext(os.path.basename(file))[0] for file in xml_to_process]
+    # elif input_xml_path is not None:
+    #     print(f'Reading page xml from {input_xml_path}')
+    #     xml_to_process = [f for f in os.listdir(input_xml_path) if
+    #                       os.path.splitext(f)[1] == '.xml']
+    #     images_to_process = [None] * len(xml_to_process)
+    #     ids_to_process = [os.path.splitext(os.path.basename(file))[0] for file in xml_to_process]
     # elif input_image_paths is not None:
     #     images_to_
     else:
         raise Exception(
             f'Either INPUT_IMAGE_PATH or INPUT_XML_PATH has to be specified. Both are missing in {config_path}.')
 
-    if skip_already_processed_files:
-        # Files already processed are skipped. File is considered as already processed when file with appropriate
-        # extension is found in all required output directories. If any of the output paths is set to 'None'
-        # (i.e. the output is not required) than this directory is omitted.
-        already_processed_files = load_already_processed_files([output_xml_path, output_logit_path, output_render_path])
-        if len(already_processed_files) > 0:
-            print(f"Already processed {len(already_processed_files)} file(s).")
-
-            images_to_process = [image for id, image in zip(ids_to_process, images_to_process) if id not in already_processed_files]
-            ids_to_process = [id for id in ids_to_process if id not in already_processed_files]
+    # if skip_already_processed_files:
+    #     # Files already processed are skipped. File is considered as already processed when file with appropriate
+    #     # extension is found in all required output directories. If any of the output paths is set to 'None'
+    #     # (i.e. the output is not required) than this directory is omitted.
+    #     already_processed_files = load_already_processed_files([output_xml_path, output_logit_path, output_render_path])
+    #     if len(already_processed_files) > 0:
+    #         print(f"Already processed {len(already_processed_files)} file(s).")
+    #
+    #         images_to_process = [image for id, image in zip(ids_to_process, images_to_process) if id not in already_processed_files]
+    #         ids_to_process = [id for id in ids_to_process if id not in already_processed_files]
     # print(ids_to_process)
     # print('-----')
     # print(images_to_process)
@@ -222,7 +222,8 @@ def main():
             #     page_layout.load_logits(os.path.join(input_logit_path, file_id + '.logits'))
 
             page_layout = page_parser.process_page(image, page_layout)
-            print(page_layout.to_pagexml_string())
+            # print(page_layout.to_pagexml_string())
+            return page_layout.regions
             exit()
 
             if output_xml_path is not None:
