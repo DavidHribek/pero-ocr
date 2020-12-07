@@ -31,6 +31,8 @@ def parse_arguments():
     parser.add_argument('--output-logit-path', help='')
     parser.add_argument('--output-alto-path', help='')
     parser.add_argument('--set-gpu', action='store_true', help='Sets visible CUDA device to first unused GPU.')
+
+    parser.add_argument('--input-image-paths', help='List of image absolute paths')
     args = parser.parse_args()
     return args
 
@@ -107,6 +109,7 @@ def main():
     args = parse_arguments()
     config_path = args.config
     skip_already_processed_files = args.skip_processed
+    input_image_paths = args.input_image_paths
 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # suppress tensorflow warnings on loading models
 
@@ -178,6 +181,8 @@ def main():
                           os.path.splitext(f)[1] == '.xml']
         images_to_process = [None] * len(xml_to_process)
         ids_to_process = [os.path.splitext(os.path.basename(file))[0] for file in xml_to_process]
+    # elif input_image_paths is not None:
+    #     images_to_
     else:
         raise Exception(
             f'Either INPUT_IMAGE_PATH or INPUT_XML_PATH has to be specified. Both are missing in {config_path}.')
@@ -192,7 +197,8 @@ def main():
 
             images_to_process = [image for id, image in zip(ids_to_process, images_to_process) if id not in already_processed_files]
             ids_to_process = [id for id in ids_to_process if id not in already_processed_files]
-
+    print(ids_to_process, images_to_process)
+    exit()
     for index, (file_id, image_file_name) in enumerate(zip(ids_to_process, images_to_process)):
         print("Processing {file_id}".format(file_id=file_id))
         t1 = time.time()
