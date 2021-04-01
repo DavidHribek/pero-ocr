@@ -1,12 +1,14 @@
 import numpy as np
 import cv2
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 class Net(object):
 
     def __init__(self, model_path, downsample=4, use_cpu=False, prefix='prefix',
                  pad=52, max_mp=5, gpu_fraction=None):
 
-        import tensorflow as tf
+        #import tensorflow as tf
         self.downsample = downsample  # downsample before first CNN inference
         self.pad = pad
         self.max_megapixels = max_mp if max_mp is not None else 5
